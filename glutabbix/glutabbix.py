@@ -468,7 +468,7 @@ class Glutabbix:
         }
 
     def _build_request_call_for_host_create(self, host, interfaces,
-                                            groupid, templateid, inventory):
+                                            groupid, template_ids, inventory):
         """ returns a JSON API string for the host.create call
             For example:
 
@@ -491,13 +491,13 @@ class Glutabbix:
             >>> inventory = {"macaddress_a": "01232"}
 
             >>> groupid = '100100000000131'
-            >>> templateid = '100100000000131'
+            >>> template_ids = ['100100000000131']
 
             >>> obj = zabbix._build_request_call_for_host_create(
             ...    'newhost',
             ...    interfaces,
             ...    groupid,
-            ...    templateid,
+            ...    template_ids,
             ...    inventory)
 
             >>> import pprint
@@ -518,6 +518,10 @@ class Glutabbix:
             'inventory': {'macaddress_a': '01232'},
             'templates': [{'templateid': '...131'}]}}
         """
+        template_block = []
+        for template in template_ids:
+            template_block.append({'templateid': template})
+
         return {
             "jsonrpc": "2.0",
             "method": "host.create",
@@ -526,14 +530,10 @@ class Glutabbix:
                 "interfaces": interfaces,
                 "groups": [
                     {
-                        "groupid": groupid
+                    "groupid": groupid
                     }
                 ],
-                "templates": [
-                    {
-                        "templateid": templateid
-                    }
-                ],
+                "templates": template_block,
                 "inventory": inventory
             },
             "auth": self.auth,
@@ -599,7 +599,7 @@ class Glutabbix:
             "jsonrpc": "2.0",
             "method": "host.delete",
             "params": [
-                { "hostid": '...' }
+                { "hostid": object_name }
             ],
             "auth": self.auth,
             "id": 1
@@ -716,14 +716,14 @@ class Glutabbix:
         output = self.api_request(obj)
         return output
 
-    def create_host(self, host, interfaces, groupid, templateid, inventory):
+    def create_host(self, host, interfaces, groupid, template_ids, inventory):
         """
             creates a host
         """
         obj = self._build_request_call_for_host_create(host,
                                                        interfaces,
                                                        groupid,
-                                                       templateid,
+                                                       template_ids,
                                                        inventory)
         output = self.api_request(obj)
         return output
