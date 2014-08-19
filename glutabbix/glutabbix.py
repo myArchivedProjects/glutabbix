@@ -2,8 +2,6 @@
 
 import requests
 import json
-# from requests import ConnectionError
-# import pprint
 
 
 class Glutabbix:
@@ -174,7 +172,7 @@ class Glutabbix:
             'id': 1,
             'jsonrpc': '2.0',
             'method': 'configuration.export',
-            'params': {'format': 'json',
+            'params': {'format': 'xml',
                         'options': {'template': ['100100000010100']}}}
         """
         return {
@@ -186,7 +184,7 @@ class Glutabbix:
                        object_id
                     ]
                 },
-                "format": "json"
+                "format": "xml"
             },
             "auth": self.auth,
             "id": 1
@@ -268,7 +266,7 @@ class Glutabbix:
             'id': 1,
             'jsonrpc': '2.0',
             'method': 'configuration.import',
-            'params': {'format': 'json',
+            'params': {'format': 'xml',
             'rules': {'graphs': {'createMissing': True,
             'updateExisting': True},
             'groups': {'createMissing': True},
@@ -371,7 +369,7 @@ class Glutabbix:
                         "createMissing": True
                     }
                 },
-                "format": "json",
+                "format": "xml",
                 "source": configuration
             },
             "auth": self.auth,
