@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python2 -u
 
 import requests
 import json
@@ -11,7 +11,7 @@ class Glutabbix:
             For example:
 
             >>> zabbix_url = 'http://zabbixserverbox/zabbix/api_jsonrpc.php'
-            >>> zabbix = Glutabbix(zabbix_url, 'admin', 'password')
+            >>> zabbix = Glutabbix(zabbix_url, 'admin', 'zabbix')
             >>> zabbix.auth #doctest: +ELLIPSIS
             u'...'
 
@@ -20,7 +20,7 @@ class Glutabbix:
         self.user = user
         self.password = password
 
-        obj = self._build_request_call_for_login('admin', 'password')
+        obj = self._build_request_call_for_login(self.user, self.password)
         self.auth = self.api_request(obj)
 
     """
@@ -37,7 +37,7 @@ class Glutabbix:
 
             >>> zabbix_url = 'http://zabbixserverbox/zabbix/api_jsonrpc.php'
             >>> user = 'admin'
-            >>> password = 'password'
+            >>> password = 'zabbix'
             >>> zabbix = Glutabbix(zabbix_url, user, password)
             >>> obj = zabbix._build_request_call_for_login(user, password)
             >>> import pprint
@@ -46,7 +46,7 @@ class Glutabbix:
              {'id': 1,
              'jsonrpc': '2.0',
              'method': 'user.login',
-              'params': {'password': 'password', 'user': 'admin'}}
+             'params': {'password': 'zabbix', 'user': 'admin'}}
         """
         return {
             "jsonrpc": "2.0",
@@ -64,7 +64,7 @@ class Glutabbix:
 
             >>> zabbix_url = 'http://zabbixserverbox/zabbix/api_jsonrpc.php'
             >>> user = 'admin'
-            >>> password = 'password'
+            >>> password = 'zabbix'
             >>> template = 'My Fat Template'
             >>> zabbix = Glutabbix(zabbix_url, user, password)
             >>> obj = zabbix._build_request_call_for_template_get(template)
@@ -98,7 +98,7 @@ class Glutabbix:
 
             >>> zabbix_url = 'http://zabbixserverbox/zabbix/api_jsonrpc.php'
             >>> user = 'admin'
-            >>> password = 'password'
+            >>> password = 'zabbix'
             >>> template = 'My Fat Template'
             >>> zabbix = Glutabbix(zabbix_url, user, password)
             >>> obj = zabbix._build_request_call_for_template_delete(template)
@@ -160,7 +160,7 @@ class Glutabbix:
 
             >>> zabbix_url = 'http://zabbixserverbox/zabbix/api_jsonrpc.php'
             >>> user = 'admin'
-            >>> password = 'password'
+            >>> password = 'zabbix'
             >>> template = 'My Fat Template'
             >>> zabbix = Glutabbix(zabbix_url, user, password)
             >>> obj = zabbix._build_request_call_for_configuration_export(
@@ -196,7 +196,7 @@ class Glutabbix:
 
             >>> zabbix_url = 'http://zabbixserverbox/zabbix/api_jsonrpc.php'
             >>> user = 'admin'
-            >>> password = 'password'
+            >>> password = 'zabbix'
             >>> template = 'My Fat Template'
             >>> zabbix = Glutabbix(zabbix_url, user, password)
             >>> config = {"zabbix_export":
@@ -279,6 +279,8 @@ class Glutabbix:
             'templateScreens': {'createMissing': True,
             'updateExisting': True},
             'templates': {'createMissing': True,
+            'updateExisting': True},
+            'triggers': {'createMissing': True,
             'updateExisting': True}},
             'source': {'zabbix_export': {'date': '...',
             'groups': [{'name': 'Templates'}],
@@ -365,6 +367,10 @@ class Glutabbix:
                         "createMissing": True,
                         "updateExisting": True
                     },
+                    "triggers": {
+                        "createMissing": True,
+                        "updateExisting": True
+                    },
                     "groups": {
                         "createMissing": True
                     }
@@ -382,7 +388,7 @@ class Glutabbix:
 
             >>> zabbix_url = 'http://zabbixserverbox/zabbix/api_jsonrpc.php'
             >>> user = 'admin'
-            >>> password = 'password'
+            >>> password = 'zabbix'
             >>> zabbix = Glutabbix(zabbix_url, user, password)
             >>> obj = zabbix._build_request_call_for_hostgroup_create(
             ... 'NewHostGrp')
@@ -411,7 +417,7 @@ class Glutabbix:
 
             >>> zabbix_url = 'http://zabbixserverbox/zabbix/api_jsonrpc.php'
             >>> user = 'admin'
-            >>> password = 'password'
+            >>> password = 'zabbix'
             >>> zabbix = Glutabbix(zabbix_url, user, password)
             >>> obj = zabbix._build_request_call_for_hostgroup_delete(
             ... 'NewHostGrp')
@@ -440,7 +446,7 @@ class Glutabbix:
 
             >>> zabbix_url = 'http://zabbixserverbox/zabbix/api_jsonrpc.php'
             >>> user = 'admin'
-            >>> password = 'password'
+            >>> password = 'zabbix'
             >>> zabbix = Glutabbix(zabbix_url, user, password)
             >>> obj = zabbix._build_request_call_for_hostgroup_get('NewHostGrp')
             >>> import pprint
@@ -472,7 +478,7 @@ class Glutabbix:
 
             >>> zabbix_url = 'http://zabbixserverbox/zabbix/api_jsonrpc.php'
             >>> user = 'admin'
-            >>> password = 'password'
+            >>> password = 'zabbix'
             >>> zabbix = Glutabbix(zabbix_url, user, password)
 
             >>> interfaces = [
@@ -544,7 +550,7 @@ class Glutabbix:
 
             >>> zabbix_url = 'http://zabbixserverbox/zabbix/api_jsonrpc.php'
             >>> user = 'admin'
-            >>> password = 'password'
+            >>> password = 'zabbix'
             >>> zabbix = Glutabbix(zabbix_url, user, password)
 
             >>> obj = zabbix._build_request_call_for_host_get('myhost')
@@ -579,7 +585,7 @@ class Glutabbix:
 
             >>> zabbix_url = 'http://zabbixserverbox/zabbix/api_jsonrpc.php'
             >>> user = 'admin'
-            >>> password = 'password'
+            >>> password = 'zabbix'
             >>> zabbix = Glutabbix(zabbix_url, user, password)
 
             >>> obj = zabbix._build_request_call_for_host_delete('myhost')
@@ -698,7 +704,7 @@ class Glutabbix:
 
             >>> zabbix_url = 'http://zabbixserverbox/zabbix/api_jsonrpc.php'
             >>> user = 'admin'
-            >>> password = 'password'
+            >>> password = 'zabbix'
             >>> hostgroup = 'Templates'
             >>> zabbix = Glutabbix(zabbix_url, user, password)
             >>> obj = zabbix.get_hostgroup(hostgroup)
