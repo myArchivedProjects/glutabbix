@@ -281,7 +281,16 @@ class Glutabbix:
             'templates': {'createMissing': True,
             'updateExisting': True},
             'triggers': {'createMissing': True,
-            'updateExisting': True}},
+            'updateExisting': True},
+            'applications': {'createMissing': True,
+            'updateExisting': True},
+            'graphs': {'createMissing': True,
+            'updateExisting': True},
+            'images': {'createMissing': True,
+            'updateExisting': True},
+            'maps': {'createMissing': True,
+            'updateExisting': True},
+            'templateLinkage': {'createMissing': True}},
             'source': {'zabbix_export': {'date': '...',
             'groups': [{'name': 'Templates'}],
             'templates': [{'applications': [{'name': 'POP service'}],
@@ -370,6 +379,25 @@ class Glutabbix:
                     "triggers": {
                         "createMissing": True,
                         "updateExisting": True
+                    },
+                    "applications": {
+                        "createMissing": True,
+                        "updateExisting": True
+                    },
+                    "discoveryRules": {
+                        "createMissing": True,
+                        "updateExisting": True
+                    },
+                    "images": {
+                        "createMissing": True,
+                        "updateExisting": True
+                    },
+                    "maps": {
+                        "createMissing": True,
+                        "updateExisting": True
+                    },
+                    "TemplateLinkage": {
+                        "createMissing": True
                     },
                     "groups": {
                         "createMissing": True
@@ -534,7 +562,7 @@ class Glutabbix:
                 "interfaces": interfaces,
                 "groups": [
                     {
-                    "groupid": groupid
+                        "groupid": groupid
                     }
                 ],
                 "templates": template_block,
@@ -544,7 +572,7 @@ class Glutabbix:
             "id": 1
         }
 
-    def _build_request_call_for_host_get(self,object_name):
+    def _build_request_call_for_host_get(self, object_name):
         """ returns a JSON API string for the host.get call
             For example:
 
@@ -572,14 +600,14 @@ class Glutabbix:
             "params": {
                 "output": "extend",
                 "filter": {
-                "host": [ object_name ]
+                    "host": [object_name]
                 }
             },
             "auth": self.auth,
             "id": 1
         }
 
-    def _build_request_call_for_host_delete(self,object_name):
+    def _build_request_call_for_host_delete(self, object_name):
         """ returns a JSON API string for the host.delete call
             For example:
 
@@ -603,11 +631,12 @@ class Glutabbix:
             "jsonrpc": "2.0",
             "method": "host.delete",
             "params": [
-                { "hostid": object_name }
+                {"hostid": object_name}
             ],
             "auth": self.auth,
             "id": 1
         }
+
     def api_request(self, obj):
         """
             api_request consumes a dictionary obj from the
@@ -731,7 +760,6 @@ class Glutabbix:
                                                        inventory)
         output = self.api_request(obj)
         return output
-
 
     def get_host(self, hostname):
         """
