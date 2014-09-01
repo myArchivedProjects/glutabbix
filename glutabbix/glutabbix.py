@@ -817,12 +817,11 @@ class Glutabbix:
         output = self.api_request(obj)
         return output
 
-    def update_host(self, hostid, interfaces, groupid, template_ids, inventory):
+    def update_host(self, hostid, groupid, template_ids, inventory):
         """
             updates a host
         """
         obj = self._build_request_call_for_host_update(hostid,
-                                                       interfaces,
                                                        groupid,
                                                        template_ids,
                                                        inventory)
