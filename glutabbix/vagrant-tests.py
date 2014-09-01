@@ -1,9 +1,11 @@
 #!/usr/bin/env python2 -u
 
-import glutabbix
 from glutabbix import Glutabbix
-import os
 import pprint
+
+host = "host1"
+template1 = "Template App MySQL"
+
 
 if __name__ == '__main__':
 
@@ -23,7 +25,7 @@ if __name__ == '__main__':
 
     print("read configuration from disk")
     with open('/tmp/lixo.xml') as f:
-        config = f.read().replace('\n','')
+        config = f.read().replace('\n', '')
 
     print("inport configuration into zabbix")
     output = zabbix.import_configuration(config)
@@ -46,7 +48,7 @@ if __name__ == '__main__':
             "type": 1,
             "main": 1,
             "useip": 1,
-            "ip": "192.168.3.1",
+            "ip": "192.168.4.1",
             "dns": "",
             "port": "10050"
         }
@@ -62,11 +64,34 @@ if __name__ == '__main__':
     output = zabbix.create_host('myhost',
                                 interfaces,
                                 groupid,
-                                templateid,
+                                [templateid],
                                 inventory)
-
 
     print("get host details")
     output = zabbix.get_host('myhost')
     pp = pprint.PrettyPrinter()
     pp.pprint(output)
+
+    output = zabbix.get_template('Template App MySQL')
+
+    interfaces = [
+        {
+            "type": 1,
+            "main": 1,
+            "useip": 1,
+            "ip": "192.168.5.1",
+            "dns": "",
+            "port": "10050"
+        }
+    ]
+
+    hostid = zabbix.get_host('myhost')[0]['hostid']
+
+    print("update host")
+    output = zabbix.update_host(hostid,
+                                interfaces,
+                                groupid,
+                                [templateid],
+                                inventory)
+
+

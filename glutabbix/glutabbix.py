@@ -267,12 +267,21 @@ class Glutabbix:
             'jsonrpc': '2.0',
             'method': 'configuration.import',
             'params': {'format': 'xml',
-            'rules': {'graphs': {'createMissing': True,
+            'rules': {'TemplateLinkage': {'createMissing': True},
+            'applications': {'createMissing': True,
+            'updateExisting': True},
+            'discoveryRules': {'createMissing': True,
+            'updateExisting': True},
+            'graphs': {'createMissing': True,
             'updateExisting': True},
             'groups': {'createMissing': True},
             'hosts': {'createMissing': True,
             'updateExisting': True},
+            'images': {'createMissing': True,
+            'updateExisting': True},
             'items': {'createMissing': True,
+            'updateExisting': True},
+            'maps': {'createMissing': True,
             'updateExisting': True},
             'screens': {'createMissing': True,
             'updateExisting': True},
@@ -281,16 +290,7 @@ class Glutabbix:
             'templates': {'createMissing': True,
             'updateExisting': True},
             'triggers': {'createMissing': True,
-            'updateExisting': True},
-            'applications': {'createMissing': True,
-            'updateExisting': True},
-            'graphs': {'createMissing': True,
-            'updateExisting': True},
-            'images': {'createMissing': True,
-            'updateExisting': True},
-            'maps': {'createMissing': True,
-            'updateExisting': True},
-            'templateLinkage': {'createMissing': True}},
+            'updateExisting': True}},
             'source': {'zabbix_export': {'date': '...',
             'groups': [{'name': 'Templates'}],
             'templates': [{'applications': [{'name': 'POP service'}],
@@ -339,14 +339,14 @@ class Glutabbix:
             'templates': []}],
             'triggers': [{'dependencies': [],
             'description': '',
-            'expression': '{Template App POP Service:net.tcp.service[pop].max(#3)}=0',
+            'expression': '{Template App POP Service:net.tcp.service[pop]...
             'name': 'POP service is down on {HOST.NAME}',
             'priority': '3',
             'status': '0',
             'type': '0',
             'url': ''}],
             'version': '2.0'}}}}
-        """
+       """
         return {
             "jsonrpc": "2.0",
             "method": "configuration.import",
@@ -572,6 +572,62 @@ class Glutabbix:
             "id": 1
         }
 
+    def _build_request_call_for_host_update(self, hostid,
+                                            groupid, template_ids, inventory):
+        """ returns a JSON API string for the host.update call
+            For example:
+
+            >>> zabbix_url = 'http://zabbixserverbox/zabbix/api_jsonrpc.php'
+            >>> user = 'admin'
+            >>> password = 'zabbix'
+            >>> zabbix = Glutabbix(zabbix_url, user, password)
+
+            >>> inventory = {"macaddress_a": "01232"}
+
+            >>> groupid = '100100000000131'
+            >>> template_ids = ['100100000000131']
+            >>> hostid = zabbix.get_host('zabbixserverbox')[0]['hostid']
+
+            >>> obj = zabbix._build_request_call_for_host_update(
+            ...    hostid,
+            ...    groupid,
+            ...    template_ids,
+            ...    inventory)
+
+            >>> import pprint
+            >>> pp = pprint.PrettyPrinter(width=60)
+            >>> pp.pprint(obj) #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+            {'auth': u'...',
+            'id': 1,
+            'jsonrpc': '2.0',
+            'method': 'host.update',
+            'params': {'groups': [{'groupid': '...131'}],
+            'hostid': ...,
+            'inventory': {'macaddress_a': '01232'},
+            'templates': [{'templateid': '...131'}]}}
+        """
+
+        template_block = []
+        for template in template_ids:
+            template_block.append({'templateid': template})
+
+        return {
+            "jsonrpc": "2.0",
+            "method": "host.update",
+            "params": {
+                "hostid": hostid,
+                "groups": [
+                    {
+                        "groupid": groupid
+                    }
+                ],
+                "templates": template_block,
+                "inventory": inventory
+            },
+            "auth": self.auth,
+            "id": 1
+        }
+
     def _build_request_call_for_host_get(self, object_name):
         """ returns a JSON API string for the host.get call
             For example:
@@ -754,6 +810,18 @@ class Glutabbix:
             creates a host
         """
         obj = self._build_request_call_for_host_create(host,
+                                                       interfaces,
+                                                       groupid,
+                                                       template_ids,
+                                                       inventory)
+        output = self.api_request(obj)
+        return output
+
+    def update_host(self, hostid, interfaces, groupid, template_ids, inventory):
+        """
+            updates a host
+        """
+        obj = self._build_request_call_for_host_update(hostid,
                                                        interfaces,
                                                        groupid,
                                                        template_ids,
